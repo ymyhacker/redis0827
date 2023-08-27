@@ -1,8 +1,10 @@
-module redis
+
+module github.com/ymyhacker/redis0827/tree/YmY-branch
 
 go 1.19
 
-require (
 
+require (
+    github.com/ymyhacker/redis0827/tree/YmY-branch/commands
 )
 
