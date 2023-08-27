@@ -4,7 +4,7 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/ymyhacker/redis0827/db"
+	"github.com/ymyhacker/redis0827/tree/YmY-branch/db"
 )
 
 type CommandResponse struct {
@@ -73,9 +73,7 @@ func ExecuteCommand(dm *DatabaseManager, command string, args []string) CommandR
 	}
 }
 
-func (db *Database) Set(key, value string) {
-	db.data[key] = value
-}
+
 
 // Add more functions for other commands...
 
@@ -87,28 +85,6 @@ func (db *Database) SetWithTTL(key, value string, ttl int) {
 	}
 }
 
-func (db *Database) ListKeys() []string {
-	keys := []string{}
-	for key := range db.data {
-		keys = append(keys, key)
-	}
-	return keys
-}
 
 
 // ... (other functions)
-
-func (dm *DatabaseManager) Expire(key string, ttl int) CommandResponse {
-	if ttl < 0 {
-		return CommandResponse{Message: "Invalid TTL"}
-	}
-
-	_, exists := dm.Database.Get(key)
-	if !exists {
-		return CommandResponse{Message: "Key does not exist"}
-	}
-
-	expirationTime := time.Now().Add(time.Duration(ttl) * time.Second)
-	dm.Database.SetExpiration(key, expirationTime)
-	return CommandResponse{Message: "OK"}
-}
