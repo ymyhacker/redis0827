@@ -12,9 +12,8 @@ func main() {
 	fmt.Println("Welcome to Simplified Redis!")
 
 	// Initialize the database
-	db := db.InitDatabase()
-
-
+	// dm := commands.NewDatabaseManager()
+	dm := commands.NewDatabaseManager()
 	for {
 		fmt.Print("> ")
 		var input string
@@ -29,7 +28,7 @@ func main() {
 		args := parts[1:]
 		if command == "Exits"
 			break
-		response := commands.ExecuteCommand(db, command, args)
+		response := dm.commands.ExecuteCommand(db, command, args)
 		fmt.Println(response)
 	}
 }
