@@ -2,33 +2,37 @@ package main
 
 import (
 	"fmt"
-	"os"
+	"bufio"
 	"strings"
 	"github.com/ymyhacker/redis0827/tree/YmY-branch/commands"
-
+	"os"
 )
 
 func main() {
 	fmt.Println("Welcome to Simplified Redis!")
 
 	// Initialize the database
-	// dm := commands.NewDatabaseManager()
-	dm := commands.NewDatabaseManager()
+
+	dm := commands.NewDatabase()
 	for {
 		fmt.Print("> ")
-		var input string
-		fmt.Scanln(&input)
+		fmt.Scan()
+        // 从stdin中取内容直到遇到换行符，停止
+        input, err := bufio.NewReader(os.Stdin).ReadString('\n') 
+        if err != nil {
+            panic(err)
+        }
+        parts := strings.Split(strings.TrimSpace(input)," ")
 
-		parts := strings.Fields(input)
 		if len(parts) == 0 {
 			continue
 		}
-
 		command := parts[0]
-		args := parts[1:]
-		if command == "Exits"
+		if  strings.ToLower(command) == "exit" {
 			break
-		response := dm.commands.ExecuteCommand(db, command, args)
+		}
+		args := parts[1:]
+		response := commands.ExecuteCommand(dm, command, args)
 		fmt.Println(response)
 	}
 }
