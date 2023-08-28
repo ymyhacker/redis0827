@@ -32,7 +32,7 @@ func NewDatabase() *Database {
 
 func (db *Database) Set(key, value string)  {
 	db.data[key] = value
-    da.expiresAt = time.Now().Add(60 * time.Second)
+    db.expiresAt = time.Now().Add(60 * time.Second)
 }
 
 func (db *Database) Delete(key string) bool {
