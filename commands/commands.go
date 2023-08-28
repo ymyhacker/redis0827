@@ -94,7 +94,7 @@ func (db *Database) ListKeys() []string {
 func ExecuteCommand(dm *Database, command string, args []string) CommandResponse {
 	
 	fmt.Println(command)
-	fmt.Println(args)
+	fmt.Println(i for i in args)
 	switch strings.ToLower(command) {
 		
 	case "set":{
