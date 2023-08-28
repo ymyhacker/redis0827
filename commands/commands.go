@@ -3,7 +3,6 @@ package commands
 import (
 	"strconv"
 	"time"
-
 	"github.com/ymyhacker/redis0827/tree/YmY-branch/db"
 )
 
@@ -13,6 +12,12 @@ type CommandResponse struct {
 
 type DatabaseManager struct {
 	Database *db.Database
+}
+
+func NewDatabaseManager() *DatabaseManager {
+	return &DatabaseManager{
+		Database: db.NewDatabase(),
+	}
 }
 
 func InitDatabase() *DatabaseManager {
@@ -25,33 +30,32 @@ func ExecuteCommand(dm *DatabaseManager, command string, args []string) CommandR
 	switch command {
 	case "SET":{
 		if len(args) != 2 {
-			return CommandResponse{Message: "Usage: SET key value"}
+			return CommandResponse{Message: "Usage: SET key value expiretime"}
 		}
 		dm.Database.Set(args[0], args[1])
 		return CommandResponse{Message: "OK"}
 		}// ... (other cases)
 	case "EXPIRE":{
 		if len(args) != 2 {
-			fmt.Println("Usage: EXPIRE key ttl")
-			continue
+			return CommandResponse{Message: "Usage: EXPIRE key ttl"}
 		}
 
 		ttl, err := strconv.Atoi(args[1])
 			if err != nil {
-				fmt.Println("Invalid TTL value")
-				continue
+				return CommandResponse{Message: "Invalid TTL value"}
 			}
 
 			response := dm.Expire(args[0], ttl)
-			fmt.Println(response.Message)
+			return CommandResponse{Message: "%s",response.Message}
+
 	}	
+
 	case "DELETE":
 		{
 		if len(args) != 1 {
 			return CommandResponse{Message: "Usage: DELETE key"}
 		}
 		dm.Database.Delete(args[0])
-		
 		return CommandResponse{Message: "OK"}
 	}
 	case "GET":
@@ -63,7 +67,15 @@ func ExecuteCommand(dm *DatabaseManager, command string, args []string) CommandR
 		return CommandResponse{Message: value}
 		// ... (other cases)
 		}
-	
+	case "Exist":
+		if len(args) != 1 {
+			return CommandResponse{Message: "Usage: EXISTS key"}
+		}
+		key := args[0]
+		if dm.Database.KeyExists(key) {
+			return CommandResponse{Message: fmt.Sprintf("Key %s exists", key)}
+		}
+		return CommandResponse{Message: fmt.Sprintf("Key %s does not exist", key)}
 	case "LIST":
 		// keys := dm.ListKeys()
 		keys := dm.Database.ListKeys()
