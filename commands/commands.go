@@ -3,14 +3,10 @@ package commands
 import (
 	"strconv"
 	"time"
-	"github.com/ymyhacker/redis0827/tree/YmY-branch/db"
+	"fmt"
+	// "github.com/ymyhacker/redis0827/tree/YmY-branch/db"
 )
-package db
 
-import (
-	   "time"
-	//    "strings"
-)
 type DatabaseManager struct {
 	Database *Database
 }
@@ -54,18 +50,18 @@ func (db *Database) KeyExists(key string) bool {
 }
 
 
-func (dm *DatabaseManager) Expire(key string, ttl int) CommandResponse {
+func (db *Database) Expire(key string, ttl int) CommandResponse {
 	if ttl < 0 {
 		return CommandResponse{Message: "Invalid TTL"}
 	}
 
-	_, exists := dm.Database.Get(key)
+	_, exists := db.Get(key)
 	if !exists {
 		return CommandResponse{Message: "Key does not exist"}
 	}
 
 	expirationTime := time.Now().Add(time.Duration(ttl) * time.Second)
-	dm.Database.SetExpiration(key, expirationTime)
+	db.SetExpiration(key, expirationTime)
 	return CommandResponse{Message: "OK"}
 }
 
@@ -95,25 +91,13 @@ func (db *Database) ListKeys() []string {
 	return keys
 }
 
-type CommandResponse struct {
-	Message string
-}
-
-type DatabaseManager struct {
-	Database *Database
-}
 
 func NewDatabaseManager() *DatabaseManager {
 	return &DatabaseManager{
-		Database: db.NewDatabase(),
+		Database: NewDatabase(),
 	}
 }
 
-func InitDatabase() *DatabaseManager {
-	return &DatabaseManager{
-		Database: db.NewDatabase(),
-	}
-}
 
 func ExecuteCommand(dm *DatabaseManager, command string, args []string) CommandResponse {
 	switch command {
@@ -134,8 +118,8 @@ func ExecuteCommand(dm *DatabaseManager, command string, args []string) CommandR
 				return CommandResponse{Message: "Invalid TTL value"}
 			}
 
-			response := dm.Expire(args[0], ttl)
-			return CommandResponse{Message: "%s",response.Message}
+			response := dm.Database.Expire(args[0], ttl)
+			return response
 
 	}	
 
@@ -152,7 +136,7 @@ func ExecuteCommand(dm *DatabaseManager, command string, args []string) CommandR
 		if len(args) != 1 {
 			return CommandResponse{Message: "Usage: GET key"}
 		}
-		value := dm.Database.Get(args[0])
+		value,_ := dm.Database.Get(args[0])
 		return CommandResponse{Message: value}
 		// ... (other cases)
 		}
